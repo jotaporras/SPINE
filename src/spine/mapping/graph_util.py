@@ -151,7 +151,7 @@ def parse_graph(
             coords = [coords[0], -coords[1]]
         node.pop("coords")
         name = node.pop("name")
-        G.add_node(name, coords=coords, type="object", **node)
+        G.add_node(name, coords=coords, type="region", **node)
 
     for edge in data["object_connections"]:
         c1 = G.nodes[edge[0]]["coords"]
@@ -235,7 +235,7 @@ class GraphHandler:
                     added_edges.add(tuple(sorted((node, neighbor))))
 
         if self.current_location != None:
-            graph_dict["current_location"] = self.current_location
+            graph_dict["robot_location"] = self.current_location
 
         graph_dict.update(extra_data)
 

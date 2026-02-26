@@ -5,7 +5,7 @@ import tiktoken
 from openai import OpenAI
 
 from spine.prompts.prompts import get_base_prompt_update_graph
-from spine.spine_util import from_huggingface, from_pretrained
+from spine.spine_util import from_huggingface
 
 
 class OpenAILLM:
@@ -81,54 +81,33 @@ class HuggingFaceLLM:
         return planner_response, True
 
 
-class UnslothLLM:
-    def __init__(self, model_path: str):
-        """Wrapper for unsloth models
+class InMemoryLLM:
+    """LLM wrapper that uses a pre-loaded model and tokenizer instead of loading from disk."""
 
-        Parameters
-        ----------
-        model_path : str, optional
-            Path to model directory of Unsloth required files.
-        """
-        self.tuned = True
-        if model_path == "":
-            model_path = "unsloth/Llama-3.2-3B-Instruct"
-            self.tuned = False
-        self.model, self.tokenizer = from_pretrained(model_path, inference=True)
-
-        self.token_encoder = tiktoken.get_encoding("cl100k_base")
-        self.token_history = []
-        self.time_history = []
-
-        self.query_llm([{"role": "user", "content": "what is in the scene"}], log=False)
+    def __init__(self, model, tokenizer, device="cuda"):
+        self.model = model
+        self.tokenizer = tokenizer
+        self.device = device
 
     def format_prompt(self, base_request: str, graph_as_json: str) -> str:
-        if self.tuned:
-            return [
-                {
-                    "role": "user",
-                    "content": f"task: {base_request}. scene graph {graph_as_json}",
-                }
-            ]
-        else:
-            print(f"\n\nHERE\n\n")
-            return get_base_prompt_update_graph(
-                request=base_request, scene_graph=graph_as_json
-            )
+        return [
+            {
+                "role": "user",
+                "content": f"task: {base_request}. scene graph {graph_as_json}",
+            }
+        ]
 
-    def query_llm(self, msg: List[Dict[str, str]], log=True):
-        t1 = time.time()
-
+    def query_llm(self, msg: List[Dict[str, str]]):
         inputs = self.tokenizer.apply_chat_template(
             msg,
             tokenize=True,
-            add_generation_prompt=True,  # Must add for generation
+            add_generation_prompt=True,
             return_tensors="pt",
-        ).to("cuda")
+        ).to(self.device)
 
         outputs = self.model.generate(
             input_ids=inputs,
-            max_new_tokens=512,
+            max_new_tokens=4048,
             use_cache=True,
             temperature=0.01,
             min_p=0.1,
@@ -137,10 +116,6 @@ class UnslothLLM:
 
         planner_response = out[0].split("end_header_id|>")[-1].split("<|eot_id|>")[0]
 
-        if log or True:
-            print(planner_response)
-            # print(f"token: {self.token_history}, time: {self.time_history}")
-            # self.token_history.append(len(self.token_encoder.encode(str(msg))))
-            # self.time_history.append(time.time() - t1)
-
         return planner_response, True
+
+

@@ -1,17 +1,11 @@
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer
-
-try:
-    from unsloth import FastLanguageModel
-    from unsloth.chat_templates import get_chat_template
-except:
-    print(f"Cannot import unsloth")
-    FastLanguageModel = None
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, PreTrainedTokenizer
 
 
 def from_huggingface(path: str):
-    model = AutoModelForCausalLM.from_pretrained(path)
+    model = AutoModelForCausalLM.from_pretrained(path, torch_dtype="auto", device_map="auto")
     tokenizer = AutoTokenizer.from_pretrained(path)
 
     return model, tokenizer
@@ -19,41 +13,44 @@ def from_huggingface(path: str):
 
 def from_pretrained(
     path: str,
-    max_seq_length: Optional[int] = 2048 * 6,
-    load_in_4bit: Optional[bool] = True,
+    max_seq_length: Optional[int] = None,
+    load_in_4bit: Optional[bool] = False,
     inference: Optional[bool] = False,
-) -> Tuple[FastLanguageModel, PreTrainedTokenizer]:
-    """Load a model from unsloth.
+) -> Tuple[AutoModelForCausalLM, PreTrainedTokenizer]:
+    """Load a model from a local path or HuggingFace Hub.
 
     Parameters
     ----------
     path : str
-        Model path. Can be local or huggingface
+        Model path. Can be local or HuggingFace Hub ID.
     max_seq_length : Optional[int], optional
-        For LLM generation, by default 2048
+        Unused; kept for API compatibility.
     load_in_4bit : Optional[bool], optional
-        Use 4 bit quantized model, by default True
+        Load with 4-bit quantization via bitsandbytes, by default False.
     inference : Optional[bool], optional
-        Load inference model, by default False
+        Unused; kept for API compatibility.
 
     Returns
     -------
-    Tuple[FastLanguageModel, PreTrainedTokenizer]
+    Tuple[AutoModelForCausalLM, PreTrainedTokenizer]
         Model and tokenizer
     """
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=path,  # YOUR MODEL YOU USED FOR TRAINING
-        max_seq_length=max_seq_length,
-        # dtype = dtype,
-        load_in_4bit=load_in_4bit,
-    )
-    if inference:
-        FastLanguageModel.for_inference(model)  # Enable native 2x faster inference
+    bnb_config = None
+    if load_in_4bit:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+        )
 
-    tokenizer = get_chat_template(
-        tokenizer,
-        chat_template="llama-3.1",
+    model = AutoModelForCausalLM.from_pretrained(
+        path,
+        torch_dtype="auto",
+        device_map="auto",
+        quantization_config=bnb_config,
     )
+    tokenizer = AutoTokenizer.from_pretrained(path)
 
     return model, tokenizer
 

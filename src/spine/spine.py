@@ -9,7 +9,7 @@ from openai import OpenAI
 
 from spine.llm_logging import LLMDataLogger, get_logger
 from spine.mapping.graph_util import GraphHandler
-from spine.models import HuggingFaceLLM, OpenAILLM, UnslothLLM
+from spine.models import HuggingFaceLLM, InMemoryLLM, OpenAILLM
 from spine.prompts.prompts import INVALID_JSON, get_base_prompt_update_graph
 
 ValidPlanFeedback = namedtuple("ValidPlanFeedback", ["success", "message"])
@@ -40,19 +40,22 @@ class SPINE:
         log_name: Optional[str] = "",
         llm: Optional[str] = "openai",
         model_path: Optional[str] = "",
+        model=None,
+        tokenizer=None,
+        client=None,
     ) -> None:
         self.graph = graph
-        if llm == "openai":
+        if client is not None:
+            self.client = client
+        elif llm == "openai":
             self.client = OpenAILLM()
-        elif llm == "unsloth":
-            self.client = UnslothLLM(model_path=model_path)
         elif llm == "huggingface":
             self.client = HuggingFaceLLM(model_path=model_path)
+        elif llm == "in_memory":
+            self.client = InMemoryLLM(model=model, tokenizer=tokenizer)
         else:
             raise ValueError(f"llm type: {llm} unsupported")
 
-        self.client = OpenAILLM()
-        self.model = "gpt-4o"
         self.n_attempts = 3
         self.base_request = ""
 
@@ -209,7 +212,7 @@ class SPINE:
 
             # navigation function require first argument to be a region. pull that out
             # here to simplify checking.
-            first_arg = self.first_element_in_arg(arg)
+            first_arg = self.first_element_in_arg(arg) # TODO: unnecessary obfuscation
 
             # is valid function
             if function not in VALID_ACTIONS:
@@ -325,9 +328,9 @@ class SPINE:
             response, is_valid_json = self.try_parse(generated_plan)
 
             if not is_valid_json.success:
-                self.logger.info(
+                print(
                     f"Not valid json. Got \n\t==\n\t{generated_plan}\n"
-                    f"=\n\twhich could not be parsed.\n\terror:{is_valid_json.message}.\n\t=="
+                    f"=\n\twhich could not be parsed.\n\terror: {is_valid_json.message}.\n\t=="
                 )
                 msg.append({"role": "assistant", "content": generated_plan})
                 msg.append(
