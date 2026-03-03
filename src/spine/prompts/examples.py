@@ -36,7 +36,7 @@ EXAMPLE_1 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "find a shovel for the user."\
+        "primary_goal": "find a shovel for the user.",\
         "relevant_graph": "field_11, field_13, unobserved_node(shovel)", \
         "reasoning": "The graph does not contain any shovels. However, I know that the graph may be incomplete, so I will explore before providing a definitive answer. I will first map, then if needed I will add regions. There are two sheds in the scene, and shovels are often found near sheds. Therefore, for each of the sheds, I will navigate to the nearby region and map.",\
         "plan": "[goto(field_11), map_region(field_11), goto(field_13), map_region(field_13)]"\n}',
@@ -48,7 +48,7 @@ EXAMPLE_1 = [
     {
         "role": "assistant",
         "content": '{\n\
-            "primary_goal": "find a shovel for the user."\
+            "primary_goal": "find a shovel for the user.",\
             "relevant_graph": "field_13, unobserved_node(shovel)",\
             "reasoning": "After mapping field_11, which is next to shed_1, I did not find a shovel. I also planned on going to example_node_14 to map near shed_2, so I will continue my plan.",\
             "plan": "[goto(field_13), map_region(field_13)]"\n}',
@@ -60,7 +60,7 @@ EXAMPLE_1 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "find a shovel for the user."\
+        "primary_goal": "find a shovel for the user.",\
         "relevant_graph": "shovel_1", \
         "reasoning": "After exploring field_13, which is next to shed_2, I found a nearby shovel, shovel_1, that is connected to field_13. This fulfills the users request.",\
         "plan": "[answer(There is a shovel, shovel_1, that is near shed_2 and connected to region_13.)]"\n}',
@@ -71,11 +71,11 @@ EXAMPLE_1 = [
     },
     {
         "role": "assistant",
-        "content": '{ \
-        "primary_goal": "find a shovel for the user."\
+        "content": '{\n\
+        "primary_goal": "find a shovel for the user.",\
         "relevant_graph": "grocery_store_1",\
         "reasoning": "There is one grocery store in the scene. Although the scene may be incomplete, I am only asked about currently observed grocery stores. Thus the answer is one",\
-        "plan": "[answer(There is one grocery store in the scene, grocery_store_1.)]"}',
+        "plan": "[answer(There is one grocery store in the scene, grocery_store_1.)]"\n}',
     },
 ]
 
@@ -122,7 +122,7 @@ EXAMPLE_2 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Answer the users questions about robots in the scene. The user is likely referring to robot_1, robot_2, and robot_3"\
+        "primary_goal": "Answer the users questions about robots in the scene. The user is likely referring to robot_1, robot_2, and robot_3",\
         "relevant_graph": "robot_1, robot_2, robot_3", \
         "reasoning": "There are currently three robots in the scene graph, robot_1, robot_2, and robot_2 robot_1 is at [210, 65], robot_2 is at [199, 65], and robot_3 is at [190, 70]. The y coordinate, which corresponds to south / north. robot_1 and robot_2 have the same y coordinate, which is lower than robot_2. Thus, robot_1 and robot_2 are equally southmost.",\
         "plan": "[answer(There are three robots in the scene. robot_1 is at [210, 65], robot_2 is at [199, 65], and robot_2 is at [190, 70]. Because robot_1 and robot_2 have the same y coordinate, which is lower than robot_2, they are equally southmost.)]"\n}',
@@ -135,7 +135,7 @@ EXAMPLE_2 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Answer the users questions about robots in the scene. The user is likely referring to robot_1, robot_2, and robot_3"\
+        "primary_goal": "Answer the users questions about robots in the scene. The user is likely referring to robot_1, robot_2, and robot_3",\
         "relevant_graph": "example_road_1, example_sidewalk_1, example_node_2", \
         "reasoning": "Based on my current location, example_road_1, I can reach example_sidewalk_1, charging_station_1, and charging_station_2. Out of this list, example_sidewalk_1 at [180, 51] is the closest to example_node_2 at [150, 38].",\
         "plan": "[answer(example_sidewalk_1 at [180, 51] is the closest to example_node_2 at [150, 38]. You should go there to look for a connection.)]"\n}',
@@ -144,7 +144,7 @@ EXAMPLE_2 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find what is around the sidewalk. From scene context, the user is referring to example_sidewalk_1."\
+        "primary_goal": "Find what is around the sidewalk. From scene context, the user is referring to example_sidewalk_1.",\
         "relevant_graph": "example_sidewalk_1",\n"reasoning": "The user wants to know what is around the sidewalk. There is only one sidewalk in the scene, example_sidewalk_1, so the user must be referring to that region. Because my intended goal is within a exploration radius of 3 meters, the most efficient way for me to complete that task is to go there and explore the region with a radius of 3 meters.",\
         "plan": "[goto(example_sidewalk_1), map_region(example_sidewalk_1), explore_region(example_sidewalk_1, 3)]"\n}',
     },
@@ -155,7 +155,7 @@ EXAMPLE_2 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find what is around the sidewalk. From scene context, the user is referring to example_sidewalk_1."\
+        "primary_goal": "Find what is around the sidewalk. From scene context, the user is referring to example_sidewalk_1.",\
         "goal": "example_sidewalk_1, discovered_region_1, discovered_region_2, discovered_region_3, discovered_region_4", \
         "reasoning": "I explore example_sidewalk_1, which means I tried to discover new regions. I then mapped those regions in search of new objects. I did find four new regions. but no new objects. By the description of discovered_region_4, it must be part of a sidewalk.",\
         "plan": "[answer(example_sidewalk_1 at [180, 51] has several traversable regions connected to it. discovered_region_4, is also part of a sidewalk. However, my exploration did not yield any new objects.)]"\n}',
@@ -192,10 +192,10 @@ EXAMPLE_3 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot."\
+        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot.",\
         "relevant_graph": "charging_station_1", \
         "reasoning": "The graph does not contain any robots, but the graph does contain a charging station, charging_station_1. The robot may be charging its battery there. I will determine if the nearby regions are connected to the booth.",\
-        "plan": "[goto(example_node_2), goto(example_node_3), goto(example_node_4), goto(example_node_5)]"}',
+        "plan": "[goto(example_node_2), goto(example_node_3), goto(example_node_4), goto(example_node_5)]"\n}',
     },
     {
         "role": "user",
@@ -204,10 +204,10 @@ EXAMPLE_3 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot."\
+        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot.",\
         "relevant_graph": "charging_station_1", \
         "reasoning": "My plan took me farther away from my goal, which is incorrect. Instead, I will navigate to the closest reachable region, example_node_3. I will then try to add a new region in the direction of charging_station_1 and replan depending on what I find.",\
-        "plan": "[goto(example_node_3), extend_map(20, 35), replan()]"}',
+        "plan": "[goto(example_node_3), extend_map(20, 35), replan()]"\n}',
     },
     {
         "role": "user",
@@ -216,10 +216,10 @@ EXAMPLE_3 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot."\
+        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot.",\
         "relevant_graph": "charging_station_1", \
-        "reasoning": Upon exploring, I was able to add a new region that allows me to navigate to my goal, charging_station_1. I will now map charging_station_1 to see if I can find the users robot",\
-        "plan": "[goto(charging_station_1), map_region(charging_station_1)]"}',
+        "reasoning": "Upon exploring, I was able to add a new region that allows me to navigate to my goal, charging_station_1. I will now map charging_station_1 to see if I can find the users robot",\
+        "plan": "[goto(charging_station_1), map_region(charging_station_1)]"\n}',
     },
     {
         "role": "user",
@@ -228,7 +228,7 @@ EXAMPLE_3 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot."\
+        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot.",\
         "relevant_graph": "robot_1", \
         "reasoning": "Upon mapping the charging_station, I found a robot. I will now inspect it.",\
         "plan": "[inspect(robot_1, what is the color of this robot, and is it damaged?)]"\n}',
@@ -240,7 +240,7 @@ EXAMPLE_3 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot."\
+        "primary_goal": "Find the users lost robot. The user provided contextual details that will help me find the robot.",\
         "relevant_graph": "robot_1",\
         "reasoning": "I found a robot that is red. The robot is not damaged. This may be the users robot, based on the information I received.",\
         "plan": "[answer(I found a robot that is red. The robot is not damaged.)]"\n}',
@@ -269,7 +269,7 @@ EXAMPLE_4 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find a path to a location 40 meters north and 30 meters east (the location [40, 30])."\
+        "primary_goal": "Find a path to a location 40 meters north and 30 meters east (the location [40, 30]).",\
         "relevant_graph": "unobserved_node(new region at [40, 30])",\
         "reasoning": "The user wants to get to the approximate point [40, 30]. example_node_2 is the closest observed region. However, the goal point is still over 20 meters way from example_node_2. Exploring will be inefficient, so I will not call explore_region. Rather, I will add a region in the goal direction and replan",\
         "plan": "[goto(example_node_2), extend_map(40, 30), replan()]"\n}',
@@ -293,7 +293,7 @@ EXAMPLE_4 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Find a path to a location 40 meters north and 30 meters east (the location [40, 30])."\
+        "primary_goal": "Find a path to a location 40 meters north and 30 meters east (the location [40, 30]).",\
         "relevant_graph": "discovered_region_1",\
         "reasoning": "upon adding a region then exploring, I was able to discover a path to a new region at [41, 33], which is close to the user request. These regions appear to be in a field, which is generally traversable",\
         "plan": "[answer(I found a path from example_node_1 to discovered_region_1 at coordinates [41, 33]. This path will likely bring you through a field, which is traversable)]"\n}',
@@ -309,18 +309,18 @@ EXAMPLE_5 = [
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Determine if the path from my current location (example_node_1) to example_ground_6 is clear."\
+        "primary_goal": "Determine if the path from my current location (example_node_1) to example_ground_6 is clear.",\
         "relevant_graph": "example_node_1, example_ground_6", \
         "reasoning": "goto uses a graph search algorithm to find the most efficient path between two connected nodes. Thus, I will call goto on my target node. If there are any problems with the path, I will received feedback. I WILL NOT call goto on each intermediate node, because that is inefficient. Futhermore, I do not need to call explore_region unless I run into issues.",\
-        "plan": "[goto(example_ground_6), replan()]"}',
+        "plan": "[goto(example_ground_6), replan()]"\n}',
     },
     {"role": "user", "content": "updates: [update_robot_location(example_ground_6)]\n"},
     {
         "role": "assistant",
         "content": '{\n\
-        "primary_goal": "Determine if the path from my current location (example_node_1) to example_ground_6 is free."\
+        "primary_goal": "Determine if the path from my current location (example_node_1) to example_ground_6 is free.",\
         "relevant_graph": "example_node_1, example_node_4, example_node_5, example_ground_6", \
         "reasoning": "I called goto(example_ground_6), which will perform a graph-search to find the best path to my goal. The robot will then follow that plan until errors occur. I got an update that I am currently at example_ground_6, so there are not problems with the path.",\
-        "plan": "[answer(the path between example_node_1 and example_ground_6 is free)]"}',
+        "plan": "[answer(the path between example_node_1 and example_ground_6 is free)]"\n}',
     },
 ]
