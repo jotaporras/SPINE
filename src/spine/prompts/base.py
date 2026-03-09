@@ -88,6 +88,18 @@ Before calling explore_region, consider this:
 Before calling goto, consider this:
 - goto uses a graph-search algorithm to find an efficient path, so avoid calling goto on intermediate nodes.
 - For example, if you path is ground_2 -> ground_7 -> ground_10. Call goto(ground_10) instead of goto(ground_7), goto(ground_10)
+
+Before calling map_region, consider this:
+- map_region discovers neighboring nodes and the region's own description. It does NOT reveal object attributes.
+- To learn about an object's properties, use inspect() instead.
+
+Before calling inspect, consider this:
+- You can call inspect on any object in the graph without navigating there first.
+- If inspect returns an empty description, assume the object is undamaged and in normal condition.
+
+When calling answer():
+- answer() is your final, terminal response. Do not say "I will replan" inside an answer.
+- Always name the relevant objects or locations you identified, even if inspection returned no details.
 """
 )
 # fmt: on

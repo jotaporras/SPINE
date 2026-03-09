@@ -41,7 +41,9 @@ def goto(region_node: str) -> None:
 
 
 def map_region(region_node: str) -> List[str]:
-    """Navigate to region in the graph and look for new objects.
+    """Navigate to region_node and reveal its neighboring nodes (objects and regions)
+    and the region's own description.
+    - Does NOT reveal object attributes or descriptions — use inspect() for that.
     - region_node must be currently observed in graph and reachable from the robot's location.
     - This CANNOT be used to add connections in the graph.
 
@@ -53,7 +55,6 @@ def extend_map(x_coordinate: int, y_coordinate: int) -> List[str]:
     """Try to add region node to graph at the coordinates (x_coordinate, y_coordinate).
 
     You should call this when your goal is far away (over 10 meters, for example).
-
     NOTE: if the proposed region is not physically feasible
     (because of an obstacle, for example), the closest feasible region will
     be added instead.
@@ -78,10 +79,13 @@ def replan() -> None:
 
 
 def inspect(object_node: str, vlm_query: str) -> List[str]:
-    """Gather more information about `object_node` by
-    querying a vision-language model with `vlm_query`. Be concise in
-    your query. The robot will also navigate to the
-    region connected to `object_node`.
+    """Gather more information about `object_node` by querying a vision-language model.
+
+    - You can call inspect on ANY object node currently in the graph — no need to
+      goto its region first. inspect handles proximity automatically.
+    - This is the ONLY way to retrieve object-level attributes. map_region will not
+      provide object descriptions.
+    - Be concise in your vlm_query.
 
     Will return updates to graph (if any).
     """
