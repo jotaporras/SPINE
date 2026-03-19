@@ -43,6 +43,7 @@ class SPINE:
         model=None,
         tokenizer=None,
         client=None,
+        use_icl: bool = True,
     ) -> None:
         self.graph = graph
         if client is not None:
@@ -56,6 +57,7 @@ class SPINE:
         else:
             raise ValueError(f"llm type: {llm} unsupported")
 
+        self.use_icl = use_icl
         self.n_attempts = 3
         self.base_request = ""
 
@@ -382,7 +384,7 @@ class SPINE:
 
         msg = (
             get_base_prompt_update_graph(
-                request=self.base_request, scene_graph=self.graph.as_json_str
+                request=self.base_request, scene_graph=self.graph.as_json_str, use_icl=self.use_icl
             )
             + self.msg_history
         )
