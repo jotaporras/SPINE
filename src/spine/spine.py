@@ -9,7 +9,7 @@ from openai import OpenAI
 
 from spine.llm_logging import LLMDataLogger, get_logger
 from spine.mapping.graph_util import GraphHandler
-from spine.models import HuggingFaceLLM, InMemoryLLM, OpenAILLM
+from spine.models import HuggingFaceLLM, InMemoryLLM, OpenAILLM, GPT5
 from spine.prompts.prompts import INVALID_JSON, get_base_prompt_update_graph
 
 ValidPlanFeedback = namedtuple("ValidPlanFeedback", ["success", "message"])
@@ -38,7 +38,7 @@ class SPINE:
         self,
         graph: GraphHandler,
         log_name: Optional[str] = "",
-        llm: Optional[str] = "openai",
+        llm: Optional[str] = "gpt-5.1",
         model_path: Optional[str] = "",
         model=None,
         tokenizer=None,
@@ -47,8 +47,10 @@ class SPINE:
         self.graph = graph
         if client is not None:
             self.client = client
-        elif llm == "openai":
+        elif llm == "gpt-4o":
             self.client = OpenAILLM()
+        elif llm == "gpt-5.1":
+            self.client = GPT5()
         elif llm == "huggingface":
             self.client = HuggingFaceLLM(model_path=model_path)
         elif llm == "in_memory":

@@ -53,7 +53,7 @@ Provide you plan as a valid JSON string (it will be parsed by the `json.loads` f
 {
 "primary_goal": "Explain your primary goal as provided by the user. Reference portions of graph, coordinates, user hints, or anything else that may be useful.",
 "relevant_graph": "List nodes or connections in the graph needed to complete your goal. If you need to explore, say unobserved_node(description). List ALL relevant nodes.",
-"reasoning": "Explain how you are trying to accomplish this task in detail.",
+"reasoning": "Explain how you are trying to accomplish this task. Be concise.",
 "plan": "Your intended sequence of actions.", 
 }
 ```

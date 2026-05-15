@@ -8,6 +8,54 @@ from spine.prompts.prompts import get_base_prompt_update_graph
 from spine.spine_util import from_huggingface
 
 
+from openai import OpenAI
+import time
+import tiktoken
+from typing import Tuple
+
+class GPT5:
+    def __init__(self, temperature: float = 0.05) -> None:
+        """Wrapper for OpenAI (GPT-5.1, no reasoning)"""
+        self.client = OpenAI()
+        self.model = "gpt-5.1"
+        self.temperature = temperature
+        self.token_encoder = tiktoken.get_encoding("cl100k_base")
+        self.token_history = []
+        self.time_history = []
+
+    def query_llm(self, msg: str) -> Tuple[str, bool]:
+        self.token_history.append(len(self.token_encoder.encode(str(msg))))
+        self.most_recent_query = msg
+
+        try:
+            t1 = time.time()
+
+            response = self.client.responses.create(
+                model=self.model,
+                input=msg,
+                temperature=self.temperature,
+                max_output_tokens=2048,
+                top_p=1,
+                # No reasoning param → defaults to non-reasoning
+                # response_format={"type": "json_object"},
+            )
+
+            top_msg = response.output_text
+
+            self.time_history.append(time.time() - t1)
+            return top_msg, True
+
+        except Exception as ex:
+            return f"Error: network dropout: {ex}", False
+
+    def format_prompt(self, base_request: str, graph_as_json: str) -> str:
+        return get_base_prompt_update_graph(
+            request=base_request, scene_graph=graph_as_json
+        )
+
+
+
+
 class OpenAILLM:
     def __init__(self, temperature: float = 0.05) -> None:
         """Wrapper for OpenAI"""
