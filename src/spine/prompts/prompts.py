@@ -12,14 +12,10 @@ from spine.prompts.examples import (
 SYS_PROMPT = {"role": "system", "content": BASE_SYSTEM_INSTRUCTIONS}
 
 
-def get_base_prompt_update_graph(request: str, scene_graph: str) -> List[str]:
+def get_base_prompt_update_graph(request: str, scene_graph: str, use_icl: bool = True) -> List[str]:
+    header = [SYS_PROMPT] + EXAMPLE_1 + EXAMPLE_2 + EXAMPLE_3 + EXAMPLE_4 + EXAMPLE_5 if use_icl else []
     prompt = (
-        [SYS_PROMPT]
-        + EXAMPLE_1
-        + EXAMPLE_2
-        + EXAMPLE_3
-        + EXAMPLE_4
-        + EXAMPLE_5
+        header
         + [
             {
                 "role": "user",
