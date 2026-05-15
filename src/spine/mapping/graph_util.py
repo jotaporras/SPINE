@@ -171,14 +171,18 @@ def parse_graph(
 
 
 class GraphHandler:
-    def __init__(self, graph_path: str, init_node: Union[None, str] = None) -> None:
-        if graph_path == "":
+    def __init__(self, graph: str | dict, init_node: Union[None, str] = None) -> None:
+        if graph == "":
             self.graph = nx.Graph()
             self.as_json_str = "{}"
             self.current_location = ""
         else:
-            with open(graph_path) as f:
-                data = json.load(f)
+
+            if isinstance(graph, str):
+                with open(graph) as f:
+                    data = json.load(f)
+            else:
+                data = graph
             self.graph, self.as_json_str = parse_graph(data)
             self.current_location = init_node
 
