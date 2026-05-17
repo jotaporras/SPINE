@@ -19,7 +19,7 @@ def get_base_prompt_update_graph(request: str, scene_graph: str, use_icl: bool =
         + [
             {
                 "role": "user",
-                "content": f"{request}\nAdvice: \n- Recall the scene may be incomplete. \n- Carefully explain your reasoning in a step-by-step manner.\n- Reason over   connections, coordinates, and semantic relationships between objects and regions in the scene.\n\n"
+                "content": f"{request}\nAdvice: \n- Recall the scene may be incomplete. \n- Carefully explain your reasoning in a step-by-step manner.\n- Reason over connections, coordinates, and semantic relationships between objects and regions in the scene.\n\n"
                 f"Scene graph:{scene_graph}",
             }
         ]
